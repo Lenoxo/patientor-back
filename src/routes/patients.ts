@@ -7,8 +7,7 @@ import {
 const router = express.Router();
 import { checkPatientData } from "../utils";
 
-// TODO: 4. Verificar que funcione desde el frontend
-// TODO: 5. Cambiar el tipo de `gender` a enum
+// TODO: 6. Corregir error de tipo en data/patients.ts
 
 router.get("/", (_req, res) => {
   const patients = getAllPatientsWithoutSsn();

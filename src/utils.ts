@@ -1,4 +1,4 @@
-import { NewPatient } from "./types";
+import { Gender, NewPatient } from "./types";
 
 function isString(text: unknown): text is string {
   return typeof text === "string" || text instanceof String;
@@ -6,6 +6,12 @@ function isString(text: unknown): text is string {
 
 function isDate(date: string): boolean {
   return Boolean(Date.parse(date));
+}
+
+function isGender(gender: string): gender is Gender {
+  return Object.values(Gender)
+    .map((val) => val.toString())
+    .includes(gender);
 }
 
 function checkDateOfBirth(date: unknown): string {
@@ -30,8 +36,8 @@ function checkSsn(ssn: unknown): string {
   return ssn;
 }
 
-function checkGender(gender: unknown): string {
-  if (!gender || !isString(gender)) {
+function checkGender(gender: unknown): Gender {
+  if (!gender || !isString(gender) || !isGender(gender)) {
     throw new Error(`Incorrect or missing gender: ${gender}`);
   }
   return gender;
