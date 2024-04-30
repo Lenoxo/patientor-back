@@ -1,7 +1,7 @@
 import { Patient } from "../src/types";
 import { checkPatientData } from "../src/utils";
 
-const patientsData: Patient[] = [
+const data = [
   {
     id: "d2773336-f723-11e9-8f0b-362b9e155667",
     name: "John McClane",
@@ -43,5 +43,12 @@ const patientsData: Patient[] = [
     occupation: "Digital evangelist",
   },
 ];
+
+// The object mapping is done here to ensure that the previous data matches with gender type (as enum)
+const patientsData: Patient[] = data.map((patient) => {
+  const newPatient = checkPatientData(patient) as Patient;
+  newPatient.id = patient.id;
+  return newPatient;
+});
 
 export default patientsData;

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from "express";
 import {
   getAllPatientsWithoutSsn,
@@ -6,8 +5,6 @@ import {
 } from "../services/patientService";
 const router = express.Router();
 import { checkPatientData } from "../utils";
-
-// TODO: 6. Corregir error de tipo en data/patients.ts
 
 router.get("/", (_req, res) => {
   const patients = getAllPatientsWithoutSsn();
