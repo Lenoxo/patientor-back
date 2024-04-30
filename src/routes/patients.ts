@@ -5,14 +5,8 @@ import {
   addPatient,
 } from "../services/patientService";
 const router = express.Router();
+import { checkPatientData } from "../utils";
 
-// TODO: 1. Establecer endpoint de POST para /api/patients para agregar pacientes (Sin validaciones)
-//  - Añadir la ruta en routes/patients.ts
-//  - Añadir el metodo de addPatient en patientService
-//    - Guardar en el array de patients el nuevo paciente
-// TODO: 2. Introducir parsing seguro
-// TODO: 3. Introducir validacion de datos
-//  - Con captura de errores
 // TODO: 4. Verificar que funcione desde el frontend
 // TODO: 5. Cambiar el tipo de `gender` a enum
 
@@ -22,8 +16,16 @@ router.get("/", (_req, res) => {
 });
 
 router.post("/", (req, res) => {
-  const patientData = req.body;
-  const result = addPatient(patientData);
-  res.send(result);
+  try {
+    const parsedPatientData = checkPatientData(req.body);
+    const result = addPatient(parsedPatientData);
+    res.send(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error);
+      res.statusCode = 400;
+      res.send(error.message);
+    }
+  }
 });
 export default router;

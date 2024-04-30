@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "tsc": "tsc",
-    "dev": "ts-node-dev --respawn --exit-child --transpile-only --rs ./src",
+    "dev": "ts-node-dev --respawn --exit-child --transpile-only --rs --inspect=9229 ./src",
     "lint": "eslint --ext .ts .",
     "start": "node build/index.js"
   },

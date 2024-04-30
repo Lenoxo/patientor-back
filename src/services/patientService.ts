@@ -1,4 +1,4 @@
-import { NonSsnPatient, Patient } from "../types";
+import { NewPatient, NonSsnPatient, Patient } from "../types";
 import patientsData from "../../data/patients";
 import { v4 as uuid } from "uuid";
 
@@ -16,11 +16,13 @@ function getAllPatientsWithoutSsn(): NonSsnPatient[] {
   }));
 }
 
-function addPatient(newPatientData: Patient) {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-  newPatientData.id = uuid();
-  patientsData.push(newPatientData);
-  return newPatientData;
+function addPatient(newPatientData: NewPatient): Patient {
+  const patientData = {
+    id: uuid(),
+    ...newPatientData,
+  };
+  patientsData.push(patientData);
+  return patientData;
 }
 
 export { getAllPatients, getAllPatientsWithoutSsn, addPatient };

@@ -1,0 +1,74 @@
+import { NewPatient } from "./types";
+
+function isString(text: unknown): text is string {
+  return typeof text === "string" || text instanceof String;
+}
+
+function isDate(date: string): boolean {
+  return Boolean(Date.parse(date));
+}
+
+function checkDateOfBirth(date: unknown): string {
+  if (!isString(date) || !isDate(date)) {
+    throw new Error(`Incorrect or missing date: ${date}`);
+  }
+
+  return date;
+}
+
+function checkName(name: unknown): string {
+  if (!name || !isString(name)) {
+    throw new Error(`Incorrect or missing name: ${name}`);
+  }
+  return name;
+}
+
+function checkSsn(ssn: unknown): string {
+  if (!ssn || !isString(ssn)) {
+    throw new Error(`Incorrect or missing ssn: ${ssn}`);
+  }
+  return ssn;
+}
+
+function checkGender(gender: unknown): string {
+  if (!gender || !isString(gender)) {
+    throw new Error(`Incorrect or missing gender: ${gender}`);
+  }
+  return gender;
+}
+
+function checkOccupation(occupation: unknown): string {
+  if (!occupation || !isString(occupation)) {
+    throw new Error(`Incorrect or missing occupation: ${occupation}`);
+  }
+
+  return occupation;
+}
+
+function checkPatientData(object: unknown): NewPatient {
+  // TODO: Validar cada uno de los campos
+  //  - En las fechas validar usando date
+  if (!object || typeof object !== "object") {
+    throw new Error("Patient data not sent");
+  }
+
+  if (
+    "name" in object &&
+    "dateOfBirth" in object &&
+    "ssn" in object &&
+    "gender" in object &&
+    "occupation" in object
+  ) {
+    return {
+      name: checkName(object.name),
+      dateOfBirth: checkDateOfBirth(object.dateOfBirth),
+      ssn: checkSsn(object.ssn),
+      gender: checkGender(object.gender),
+      occupation: checkOccupation(object.occupation),
+    };
+  }
+
+  throw new Error("Missing patient data fields");
+}
+
+export { checkPatientData };

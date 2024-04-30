@@ -1,4 +1,5 @@
 import { Patient } from "../src/types";
+import { checkPatientData } from "../src/utils";
 
 const patientsData: Patient[] = [
   {
