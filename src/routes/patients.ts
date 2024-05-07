@@ -2,6 +2,7 @@ import express from "express";
 import {
   getAllPatientsWithoutSsn,
   addPatient,
+  getPatientData,
 } from "../services/patientService";
 const router = express.Router();
 import { checkPatientData } from "../utils";
@@ -9,6 +10,20 @@ import { checkPatientData } from "../utils";
 router.get("/", (_req, res) => {
   const patients = getAllPatientsWithoutSsn();
   res.send(patients);
+});
+
+router.get("/:id", (req, res) => {
+  try {
+    const response = getPatientData(req.params.id);
+    res.json(response);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.statusCode = 404;
+      res.send(error.message);
+    }
+
+    console.error(error);
+  }
 });
 
 router.post("/", (req, res) => {
