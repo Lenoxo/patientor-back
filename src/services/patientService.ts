@@ -16,6 +16,16 @@ function getAllPatientsWithoutSsn(): NonSsnPatient[] {
   }));
 }
 
+function getPatientData(id: string): Patient {
+  const patientData = patientsData.find((patient) => patient.id === id);
+
+  if (!patientData) {
+    throw new Error("Patient not found");
+  }
+
+  return patientData;
+}
+
 function addPatient(newPatientData: NewPatient): Patient {
   const patientData = {
     id: uuid(),
@@ -25,4 +35,4 @@ function addPatient(newPatientData: NewPatient): Patient {
   return patientData;
 }
 
-export { getAllPatients, getAllPatientsWithoutSsn, addPatient };
+export { getAllPatients, getAllPatientsWithoutSsn, addPatient, getPatientData };
