@@ -39,4 +39,18 @@ router.post("/", (req, res) => {
     }
   }
 });
+
+router.post("/:id/entries", (_req, res) => {
+  try {
+    res.send("Added patient entry");
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error);
+      res.statusCode = 400;
+      res.send(error.message);
+    } else {
+      console.error(`Unknown error: ${error}`)
+    }
+  }
+});
 export default router;
