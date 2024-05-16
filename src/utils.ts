@@ -52,8 +52,6 @@ function checkOccupation(occupation: unknown): string {
 }
 
 function checkPatientData(object: unknown): NewPatient {
-  // TODO: Validar cada uno de los campos
-  //  - En las fechas validar usando date
   if (!object || typeof object !== "object") {
     throw new Error("Patient data not sent");
   }

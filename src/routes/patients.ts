@@ -3,6 +3,7 @@ import {
   getAllPatientsWithoutSsn,
   addPatient,
   getPatientData,
+  addEntry,
 } from "../services/patientService";
 const router = express.Router();
 import { checkPatientData } from "../utils";
@@ -42,12 +43,10 @@ router.post("/", (req, res) => {
 
 router.post("/:id/entries", (req, res) => {
   try {
-    const { id } = req.params
+    const id = req.params.id
     const newEntryData = req.body
-    const patientData = getPatientData(id)
-    patientData.entries?.push(newEntryData)
-
-    res.send(patientData);
+    const result = addEntry(id, newEntryData)
+    res.send(result);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error);
