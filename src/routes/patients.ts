@@ -40,9 +40,14 @@ router.post("/", (req, res) => {
   }
 });
 
-router.post("/:id/entries", (_req, res) => {
+router.post("/:id/entries", (req, res) => {
   try {
-    res.send("Added patient entry");
+    const { id } = req.params
+    const newEntryData = req.body
+    const patientData = getPatientData(id)
+    patientData.entries?.push(newEntryData)
+
+    res.send(patientData);
   } catch (error) {
     if (error instanceof Error) {
       console.error(error);
