@@ -1,4 +1,8 @@
-import { Gender, NewPatient } from "./types";
+import { BaseEntry, Diagnose, Gender, NewPatient } from "./types";
+
+// function assertNever(value: never): never {
+//   throw new Error(`This type is not expected in entries: ${value}`)
+// }
 
 function isString(text: unknown): text is string {
   return typeof text === "string" || text instanceof String;
@@ -14,7 +18,7 @@ function isGender(gender: string): gender is Gender {
     .includes(gender);
 }
 
-function checkDateOfBirth(date: unknown): string {
+function checkDate(date: unknown): string {
   if (!isString(date) || !isDate(date)) {
     throw new Error(`Incorrect or missing date: ${date}`);
   }
@@ -22,11 +26,34 @@ function checkDateOfBirth(date: unknown): string {
   return date;
 }
 
+const parseDiagnosisCodes = (object: unknown): Array<Diagnose['code']> => {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnose['code']>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnose['code']>;
+};
+
 function checkName(name: unknown): string {
   if (!name || !isString(name)) {
     throw new Error(`Incorrect or missing name: ${name}`);
   }
   return name;
+}
+
+function checkDescription(description: unknown): string {
+  if (!description || !isString(description)) {
+    throw new Error(`Incorrect or missing description: ${description}`);
+  }
+  return description;
+}
+
+function checkSpecialist(specialist: unknown): string {
+  if (!specialist || !isString(specialist)) {
+    throw new Error(`Incorrect or missing specialist: ${specialist}`);
+  }
+  return specialist;
 }
 
 function checkSsn(ssn: unknown): string {
@@ -65,7 +92,7 @@ function checkPatientData(object: unknown): NewPatient {
   ) {
     return {
       name: checkName(object.name),
-      dateOfBirth: checkDateOfBirth(object.dateOfBirth),
+      dateOfBirth: checkDate(object.dateOfBirth),
       ssn: checkSsn(object.ssn),
       gender: checkGender(object.gender),
       occupation: checkOccupation(object.occupation),
@@ -75,4 +102,23 @@ function checkPatientData(object: unknown): NewPatient {
   throw new Error("Missing patient data fields");
 }
 
-export { checkPatientData };
+type BaseEntryWithoutId = Omit<BaseEntry, "id">
+
+function checkEntryData(object: unknown): BaseEntryWithoutId {
+  if (!object || typeof object !== "object") {
+    throw new Error("Patient data not sent");
+  }
+
+  if ("description" in object && "date" in object && "specialist" in object && "diagnosisCodes" in object) {
+    return {
+      description: checkDescription(object.description),
+      date: checkDate(object.date),
+      specialist: checkSpecialist(object.specialist),
+      diagnosisCodes: parseDiagnosisCodes(object),
+    }
+  }
+
+  throw new Error("Missing BaseEntry data fields");
+}
+
+export { checkPatientData, checkEntryData };

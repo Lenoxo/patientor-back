@@ -6,7 +6,7 @@ import {
   addEntry,
 } from "../services/patientService";
 const router = express.Router();
-import { checkPatientData } from "../utils";
+import { checkEntryData, checkPatientData } from "../utils";
 
 router.get("/", (_req, res) => {
   const patients = getAllPatientsWithoutSsn();
@@ -44,8 +44,8 @@ router.post("/", (req, res) => {
 router.post("/:id/entries", (req, res) => {
   try {
     const id = req.params.id
-    const newEntryData = req.body
-    const result = addEntry(id, newEntryData)
+    const parsedEntryData = checkEntryData(req.body)
+    const result = addEntry(id, parsedEntryData)
     res.send(result);
   } catch (error) {
     if (error instanceof Error) {
