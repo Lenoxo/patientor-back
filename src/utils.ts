@@ -1,11 +1,15 @@
-import { BaseEntry, Diagnose, Gender, NewPatient } from "./types";
+import { Diagnose, Gender, HealthCheckRating, NewEntry, NewPatient } from "./types";
 
-// function assertNever(value: never): never {
-//   throw new Error(`This type is not expected in entries: ${value}`)
-// }
+function assertNever(value: never): never {
+  throw new Error(`This type is not expected in entries: ${value}`)
+}
 
 function isString(text: unknown): text is string {
   return typeof text === "string" || text instanceof String;
+}
+
+function isNumber(num: unknown): num is number {
+  return typeof num === "number";
 }
 
 function isDate(date: string): boolean {
@@ -34,6 +38,19 @@ const parseDiagnosisCodes = (object: unknown): Array<Diagnose['code']> => {
 
   return object.diagnosisCodes as Array<Diagnose['code']>;
 };
+
+function isHealthCheckRating(rating: number): rating is HealthCheckRating {
+  return Object.values(HealthCheckRating)
+    .map((val) => val) // Here the val is a number according to the HealthCheckRating type values
+    .includes(rating);
+}
+
+function checkHealthRating(rating: unknown): HealthCheckRating {
+  if (!rating || !isNumber(rating) || !isHealthCheckRating(rating)) {
+    throw new Error(`Incorrect healthCheckRating value: ${rating}`);
+  }
+  return rating
+}
 
 function checkName(name: unknown): string {
   if (!name || !isString(name)) {
@@ -102,20 +119,49 @@ function checkPatientData(object: unknown): NewPatient {
   throw new Error("Missing patient data fields");
 }
 
-type BaseEntryWithoutId = Omit<BaseEntry, "id">
+function checkAdditionalEntryData(object: unknown) {
+  if (!object || typeof object !== "object" || !("type" in object)) {
+    throw new Error("Field type missing in entry data");
+  }
 
-function checkEntryData(object: unknown): BaseEntryWithoutId {
+  switch (object.type) {
+    // case "Hospital":
+    case "HealthCheck":
+      if (!("healthCheckRating" in object)) {
+        throw new Error("Field healthCheckRating missing in entry data");
+      }
+
+      return {
+        healthCheckRating: checkHealthRating(object.healthCheckRating)
+      }
+    // case "OccupationalHealthcare":
+
+    default:
+      assertNever(object)
+  }
+
+}
+
+function checkEntryData(object: unknown): NewEntry {
   if (!object || typeof object !== "object") {
     throw new Error("Patient data not sent");
   }
 
+  let parsedEntryData;
+
   if ("description" in object && "date" in object && "specialist" in object && "diagnosisCodes" in object) {
-    return {
+    parsedEntryData = {
       description: checkDescription(object.description),
       date: checkDate(object.date),
       specialist: checkSpecialist(object.specialist),
       diagnosisCodes: parseDiagnosisCodes(object),
     }
+  }
+
+  if ("type" in object) {
+    const additionalEntryData = checkAdditionalEntryData(object)
+    parsedEntryData = { ...parsedEntryData, ...additionalEntryData } as NewEntry
+    return parsedEntryData
   }
 
   throw new Error("Missing BaseEntry data fields");
