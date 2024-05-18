@@ -3,9 +3,10 @@ import {
   getAllPatientsWithoutSsn,
   addPatient,
   getPatientData,
+  addEntry,
 } from "../services/patientService";
 const router = express.Router();
-import { checkPatientData } from "../utils";
+import { checkEntryData, checkPatientData } from "../utils";
 
 router.get("/", (_req, res) => {
   const patients = getAllPatientsWithoutSsn();
@@ -36,6 +37,23 @@ router.post("/", (req, res) => {
       console.error(error);
       res.statusCode = 400;
       res.send(error.message);
+    }
+  }
+});
+
+router.post("/:id/entries", (req, res) => {
+  try {
+    const id = req.params.id
+    const parsedEntryData = checkEntryData(req.body)
+    const result = addEntry(id, parsedEntryData)
+    res.send(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error(error);
+      res.statusCode = 400;
+      res.send(error.message);
+    } else {
+      console.error(`Unknown error: ${error}`)
     }
   }
 });

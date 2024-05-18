@@ -7,7 +7,7 @@
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --exit-child --transpile-only --rs --inspect=9229 ./src",
     "lint": "eslint --ext .ts .",
-    "start": "node build/index.js"
+    "start": "node build/src/index.js"
   },
   "author": "Emanuel Padilla (Lenoxo)",
   "license": "MIT",
