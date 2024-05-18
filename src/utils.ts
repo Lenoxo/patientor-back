@@ -6,13 +6,10 @@ import {
   NewEntry,
   NewPatient,
   OccupationalHealthcareEntry,
-  SickLeave,
+  SickLeave
 } from "./types";
 
-type checkedOccupationalData = Pick<
-  OccupationalHealthcareEntry,
-  "employerName" | "sickLeave"
->;
+type checkedOccupationalData = Pick<OccupationalHealthcareEntry, "employerName" | "sickLeave">;
 
 function assertNever(value: never): never {
   throw new Error(`This type is not expected in entries: ${value}`);
@@ -83,17 +80,9 @@ function checkGender(gender: unknown): Gender {
   return gender;
 }
 
-function checkSickLeave({
-  startDate,
-  endDate,
-}: {
-  startDate: unknown;
-  endDate: unknown;
-}): SickLeave {
+function checkSickLeave({ startDate, endDate }: { startDate: unknown; endDate: unknown }): SickLeave {
   if (!startDate || !isString(startDate) || !isDate(startDate)) {
-    throw new Error(
-      `Incorrect or missing startDate in sickLeave: ${startDate}`,
-    );
+    throw new Error(`Incorrect or missing startDate in sickLeave: ${startDate}`);
   }
 
   if (!endDate || !isString(endDate) || !isDate(endDate)) {
@@ -105,7 +94,7 @@ function checkSickLeave({
 
 function checkOccupationalHealthcareData({
   employerName,
-  sickLeave,
+  sickLeave
 }: {
   employerName: unknown;
   sickLeave?: SickLeave;
@@ -115,10 +104,7 @@ function checkOccupationalHealthcareData({
   }
 
   const checkedData: checkedOccupationalData = {
-    employerName: checkString(
-      employerName,
-      "Incorrect or missing employerName",
-    ),
+    employerName: checkString(employerName, "Incorrect or missing employerName")
   };
 
   if (sickLeave) {
@@ -129,21 +115,13 @@ function checkOccupationalHealthcareData({
 }
 
 function checkDischarge(discharge: unknown): Discharge {
-  if (
-    !discharge ||
-    typeof discharge !== "object" ||
-    !("date" in discharge) ||
-    !("criteria" in discharge)
-  ) {
+  if (!discharge || typeof discharge !== "object" || !("date" in discharge) || !("criteria" in discharge)) {
     throw new Error(`Incorrect or missing discharge: ${discharge}`);
   }
 
   return {
     date: checkDate(discharge.date),
-    criteria: checkString(
-      discharge.criteria,
-      "Incorrect or missing criteria in discharge",
-    ),
+    criteria: checkString(discharge.criteria, "Incorrect or missing criteria in discharge")
   };
 }
 
@@ -154,22 +132,13 @@ function checkPatientData(object: unknown): NewPatient {
     throw new Error("Patient data not sent");
   }
 
-  if (
-    "name" in object &&
-    "dateOfBirth" in object &&
-    "ssn" in object &&
-    "gender" in object &&
-    "occupation" in object
-  ) {
+  if ("name" in object && "dateOfBirth" in object && "ssn" in object && "gender" in object && "occupation" in object) {
     return {
       name: checkString(object.name, "Incorrect or missing name"),
       dateOfBirth: checkDate(object.dateOfBirth),
       ssn: checkString(object.ssn, "Incorrect or missing ssn"),
       gender: checkGender(object.gender),
-      occupation: checkString(
-        object.occupation,
-        "Incorrect or missing occupation",
-      ),
+      occupation: checkString(object.occupation, "Incorrect or missing occupation")
     };
   }
 
@@ -187,7 +156,7 @@ function checkAdditionalEntryData(object: NewEntry) {
         throw new Error("Field discharge missing in entry data");
       }
       return {
-        discharge: checkDischarge(object.discharge),
+        discharge: checkDischarge(object.discharge)
       };
     case "OccupationalHealthcare":
       if (!("employerName" in object)) {
@@ -201,7 +170,7 @@ function checkAdditionalEntryData(object: NewEntry) {
       }
 
       return {
-        healthCheckRating: checkHealthRating(object.healthCheckRating),
+        healthCheckRating: checkHealthRating(object.healthCheckRating)
       };
 
     default:
@@ -216,23 +185,12 @@ function checkEntryData(object: unknown): NewEntry {
 
   let parsedEntryData;
 
-  if (
-    "description" in object &&
-    "date" in object &&
-    "specialist" in object &&
-    "diagnosisCodes" in object
-  ) {
+  if ("description" in object && "date" in object && "specialist" in object && "diagnosisCodes" in object) {
     parsedEntryData = {
-      description: checkString(
-        object.description,
-        "Incorrect or missing description",
-      ),
+      description: checkString(object.description, "Incorrect or missing description"),
       date: checkDate(object.date),
-      specialist: checkString(
-        object.specialist,
-        "Incorrect or missing specialist",
-      ),
-      diagnosisCodes: parseDiagnosisCodes(object),
+      specialist: checkString(object.specialist, "Incorrect or missing specialist"),
+      diagnosisCodes: parseDiagnosisCodes(object)
     };
   }
 
@@ -240,7 +198,7 @@ function checkEntryData(object: unknown): NewEntry {
     const additionalEntryData = checkAdditionalEntryData(object as NewEntry);
     parsedEntryData = {
       ...parsedEntryData,
-      ...additionalEntryData,
+      ...additionalEntryData
     } as NewEntry;
     return parsedEntryData;
   }

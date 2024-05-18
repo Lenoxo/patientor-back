@@ -2,10 +2,11 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "prettier"
   ],
   "plugins": [
-    "@typescript-eslint"
+    "@typescript-eslint", "prettier"
   ],
   "env": {
     "browser": true,
@@ -13,6 +14,7 @@
     "node": true
   },
   "rules": {
+    "prettier/prettier": "error",
     "@typescript-eslint/semi": [
       "error"
     ],

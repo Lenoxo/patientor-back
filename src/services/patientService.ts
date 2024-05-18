@@ -12,7 +12,7 @@ function getAllPatientsWithoutSsn(): NonSsnPatient[] {
     dateOfBirth,
     name,
     gender,
-    occupation,
+    occupation
   }));
 }
 
@@ -29,19 +29,19 @@ function getPatientData(id: string): Patient {
 function addPatient(newPatientData: NewPatient): Patient {
   const patientData = {
     id: uuid(),
-    ...newPatientData,
+    ...newPatientData
   };
   patientsData.push(patientData);
   return patientData;
 }
 
 function addEntry(id: Patient["id"], newEntryData: NewEntry): Patient {
-  const patientData = getPatientData(id)
+  const patientData = getPatientData(id);
   patientData.entries?.push({
     id: uuid(),
     ...newEntryData
-  })
-  return patientData
+  });
+  return patientData;
 }
 
 export { getAllPatients, getAllPatientsWithoutSsn, addPatient, getPatientData, addEntry };

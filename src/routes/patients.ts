@@ -1,10 +1,5 @@
 import express from "express";
-import {
-  getAllPatientsWithoutSsn,
-  addPatient,
-  getPatientData,
-  addEntry,
-} from "../services/patientService";
+import { getAllPatientsWithoutSsn, addPatient, getPatientData, addEntry } from "../services/patientService";
 const router = express.Router();
 import { checkEntryData, checkPatientData } from "../utils";
 
@@ -43,9 +38,9 @@ router.post("/", (req, res) => {
 
 router.post("/:id/entries", (req, res) => {
   try {
-    const id = req.params.id
-    const parsedEntryData = checkEntryData(req.body)
-    const result = addEntry(id, parsedEntryData)
+    const id = req.params.id;
+    const parsedEntryData = checkEntryData(req.body);
+    const result = addEntry(id, parsedEntryData);
     res.send(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -53,7 +48,7 @@ router.post("/:id/entries", (req, res) => {
       res.statusCode = 400;
       res.send(error.message);
     } else {
-      console.error(`Unknown error: ${error}`)
+      console.error(`Unknown error: ${error}`);
     }
   }
 });
