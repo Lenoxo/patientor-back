@@ -5,8 +5,14 @@ import {
   HealthCheckRating,
   NewEntry,
   NewPatient,
+  OccupationalHealthcareEntry,
   SickLeave,
 } from "./types";
+
+type checkedOccupationalData = Pick<
+  OccupationalHealthcareEntry,
+  "employerName" | "sickLeave"
+>;
 
 function assertNever(value: never): never {
   throw new Error(`This type is not expected in entries: ${value}`);
@@ -103,18 +109,17 @@ function checkOccupationalHealthcareData({
 }: {
   employerName: unknown;
   sickLeave?: SickLeave;
-}) {
+}): checkedOccupationalData {
   if (!isString(employerName)) {
     throw new Error(`Incorrect employerName: ${employerName}`);
   }
 
-  // TODO: Find a better way to handle this without using the any type
-  let checkedData: any = {};
-
-  checkedData.employerName = checkString(
-    employerName,
-    "Incorrect or missing employerName",
-  );
+  const checkedData: checkedOccupationalData = {
+    employerName: checkString(
+      employerName,
+      "Incorrect or missing employerName",
+    ),
+  };
 
   if (sickLeave) {
     checkedData.sickLeave = checkSickLeave(sickLeave);
@@ -171,7 +176,7 @@ function checkPatientData(object: unknown): NewPatient {
   throw new Error("Missing patient data fields");
 }
 
-function checkAdditionalEntryData(object: unknown) {
+function checkAdditionalEntryData(object: NewEntry) {
   if (!object || typeof object !== "object" || !("type" in object)) {
     throw new Error("Field type missing in entry data");
   }
@@ -188,12 +193,8 @@ function checkAdditionalEntryData(object: unknown) {
       if (!("employerName" in object)) {
         throw new Error("Field employerName missing in entry data");
       }
+      return checkOccupationalHealthcareData(object);
 
-      // I let here this variable because in the return of checkOccupationalHealthcareData there are several keys for the object.
-
-      const occupationalHealthcareData =
-        checkOccupationalHealthcareData(object);
-      return occupationalHealthcareData;
     case "HealthCheck":
       if (!("healthCheckRating" in object)) {
         throw new Error("Field healthCheckRating missing in entry data");
@@ -236,8 +237,7 @@ function checkEntryData(object: unknown): NewEntry {
   }
 
   if ("type" in object) {
-    // TODO: Fix the error caused by handling this object with the type unknown
-    const additionalEntryData = checkAdditionalEntryData(object);
+    const additionalEntryData = checkAdditionalEntryData(object as NewEntry);
     parsedEntryData = {
       ...parsedEntryData,
       ...additionalEntryData,
