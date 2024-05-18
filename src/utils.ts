@@ -63,32 +63,11 @@ function checkHealthRating(rating: unknown): HealthCheckRating {
   return rating;
 }
 
-function checkName(name: unknown): string {
-  if (!name || !isString(name)) {
-    throw new Error(`Incorrect or missing name: ${name}`);
+function checkString(string: unknown, errorMessage: string): string {
+  if (!string || !isString(string)) {
+    throw new Error(`${errorMessage}: ${string}`);
   }
-  return name;
-}
-
-function checkDescription(description: unknown): string {
-  if (!description || !isString(description)) {
-    throw new Error(`Incorrect or missing description: ${description}`);
-  }
-  return description;
-}
-
-function checkSpecialist(specialist: unknown): string {
-  if (!specialist || !isString(specialist)) {
-    throw new Error(`Incorrect or missing specialist: ${specialist}`);
-  }
-  return specialist;
-}
-
-function checkSsn(ssn: unknown): string {
-  if (!ssn || !isString(ssn)) {
-    throw new Error(`Incorrect or missing ssn: ${ssn}`);
-  }
-  return ssn;
+  return string;
 }
 
 function checkGender(gender: unknown): Gender {
@@ -96,14 +75,6 @@ function checkGender(gender: unknown): Gender {
     throw new Error(`Incorrect or missing gender: ${gender}`);
   }
   return gender;
-}
-
-function checkOccupation(occupation: unknown): string {
-  if (!occupation || !isString(occupation)) {
-    throw new Error(`Incorrect or missing occupation: ${occupation}`);
-  }
-
-  return occupation;
 }
 
 function checkSickLeave({
@@ -140,7 +111,10 @@ function checkOccupationalHealthcareData({
   // TODO: Find a better way to handle this without using the any type
   let checkedData: any = {};
 
-  checkedData.employerName = checkName(employerName);
+  checkedData.employerName = checkString(
+    employerName,
+    "Incorrect or missing employerName",
+  );
 
   if (sickLeave) {
     checkedData.sickLeave = checkSickLeave(sickLeave);
@@ -161,7 +135,10 @@ function checkDischarge(discharge: unknown): Discharge {
 
   return {
     date: checkDate(discharge.date),
-    criteria: checkDescription(discharge.criteria),
+    criteria: checkString(
+      discharge.criteria,
+      "Incorrect or missing criteria in discharge",
+    ),
   };
 }
 
@@ -180,11 +157,14 @@ function checkPatientData(object: unknown): NewPatient {
     "occupation" in object
   ) {
     return {
-      name: checkName(object.name),
+      name: checkString(object.name, "Incorrect or missing name"),
       dateOfBirth: checkDate(object.dateOfBirth),
-      ssn: checkSsn(object.ssn),
+      ssn: checkString(object.ssn, "Incorrect or missing ssn"),
       gender: checkGender(object.gender),
-      occupation: checkOccupation(object.occupation),
+      occupation: checkString(
+        object.occupation,
+        "Incorrect or missing occupation",
+      ),
     };
   }
 
@@ -242,9 +222,15 @@ function checkEntryData(object: unknown): NewEntry {
     "diagnosisCodes" in object
   ) {
     parsedEntryData = {
-      description: checkDescription(object.description),
+      description: checkString(
+        object.description,
+        "Incorrect or missing description",
+      ),
       date: checkDate(object.date),
-      specialist: checkSpecialist(object.specialist),
+      specialist: checkString(
+        object.specialist,
+        "Incorrect or missing specialist",
+      ),
       diagnosisCodes: parseDiagnosisCodes(object),
     };
   }
