@@ -1,5 +1,6 @@
 import {
   Diagnose,
+  Discharge,
   Gender,
   HealthCheckRating,
   NewEntry,
@@ -148,6 +149,22 @@ function checkOccupationalHealthcareData({
   return checkedData;
 }
 
+function checkDischarge(discharge: unknown): Discharge {
+  if (
+    !discharge ||
+    typeof discharge !== "object" ||
+    !("date" in discharge) ||
+    !("criteria" in discharge)
+  ) {
+    throw new Error(`Incorrect or missing discharge: ${discharge}`);
+  }
+
+  return {
+    date: checkDate(discharge.date),
+    criteria: checkDescription(discharge.criteria),
+  };
+}
+
 // Main data checks
 
 function checkPatientData(object: unknown): NewPatient {
@@ -180,12 +197,19 @@ function checkAdditionalEntryData(object: unknown) {
   }
 
   switch (object.type) {
-    // case "Hospital":
-
+    case "Hospital":
+      if (!("discharge" in object)) {
+        throw new Error("Field discharge missing in entry data");
+      }
+      return {
+        discharge: checkDischarge(object.discharge),
+      };
     case "OccupationalHealthcare":
       if (!("employerName" in object)) {
         throw new Error("Field employerName missing in entry data");
       }
+
+      // I let here this variable because in the return of checkOccupationalHealthcareData there are several keys for the object.
 
       const occupationalHealthcareData =
         checkOccupationalHealthcareData(object);

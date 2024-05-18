@@ -34,7 +34,7 @@ interface HospitalEntry extends BaseEntry {
   discharge: Discharge;
 }
 
-interface Discharge {
+export interface Discharge {
   date: string;
   criteria: string;
 }
