@@ -9,7 +9,7 @@ import {
   SickLeave
 } from "./types";
 
-type checkedOccupationalData = Pick<OccupationalHealthcareEntry, "employerName" | "sickLeave">;
+type checkedOccupationalData = Pick<OccupationalHealthcareEntry, "employerName" | "sickLeave" | "type">;
 
 function assertNever(value: never): never {
   throw new Error(`This type is not expected in entries: ${value}`);
@@ -60,7 +60,8 @@ const parseDiagnosisCodes = (object: unknown): Array<Diagnose["code"]> => {
 };
 
 function checkHealthRating(rating: unknown): HealthCheckRating {
-  if (!rating || !isNumber(rating) || !isHealthCheckRating(rating)) {
+  // I had to skip the check of !rating, because js as a weakly typed languange, parses the 0 in !rating as true in this if statement
+  if (!isNumber(rating) || !isHealthCheckRating(rating)) {
     throw new Error(`Incorrect healthCheckRating value: ${rating}`);
   }
   return rating;
@@ -104,7 +105,8 @@ function checkOccupationalHealthcareData({
   }
 
   const checkedData: checkedOccupationalData = {
-    employerName: checkString(employerName, "Incorrect or missing employerName")
+    employerName: checkString(employerName, "Incorrect or missing employerName"),
+    type: "OccupationalHealthcare"
   };
 
   if (sickLeave) {
@@ -156,6 +158,7 @@ function checkAdditionalEntryData(object: NewEntry) {
         throw new Error("Field discharge missing in entry data");
       }
       return {
+        type: "Hospital",
         discharge: checkDischarge(object.discharge)
       };
     case "OccupationalHealthcare":
@@ -170,6 +173,7 @@ function checkAdditionalEntryData(object: NewEntry) {
       }
 
       return {
+        type: "HealthCheck",
         healthCheckRating: checkHealthRating(object.healthCheckRating)
       };
 
